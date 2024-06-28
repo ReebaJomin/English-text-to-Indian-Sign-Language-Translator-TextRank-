@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English to ISL Translator</title>
+    <style>
+        #video-frame {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Input Paragraph</h1>
+    <textarea id="paragraph" rows="4" cols="50"></textarea>
+    <button onclick="submitParagraph()">Submit</button>
+
+    <div id="video-frame"></div>
+
+    <script>
+        function submitParagraph() {
+            const paragraph = document.getElementById('paragraph').value;
+            fetch('/get_videos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ paragraph: paragraph })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const videoFrame = document.getElementById('video-frame');
+                videoFrame.innerHTML = '';
+                data.video_urls.forEach(url => {
+                    const iframe = document.createElement('iframe');
+                    iframe.width = "560";
+                    iframe.height = "315";
+                    iframe.src = url.replace("watch?v=", "embed/");
+                    iframe.frameBorder = "0";
+                    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                    iframe.allowFullscreen = true;
+                    videoFrame.appendChild(iframe);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
